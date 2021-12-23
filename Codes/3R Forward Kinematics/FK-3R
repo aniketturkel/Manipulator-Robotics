@@ -1,0 +1,108 @@
+# Manipulator robotics FK
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
+import sympy as sp
+import mpmath as m
+from sympy import lambdify
+from sympy import Symbol
+
+theta1 = Symbol('theta1') #Symbols to use as variables
+theta2 = Symbol('theta2')
+theta3 = Symbol('theta3')
+
+theta_1 = 0 #The actual values to substitute in symbols
+theta_2 = 0
+theta_3 = 0
+
+x0,y0,z0 = 3,3,0
+x1,y1,z1 = 3,3,0
+x2,y2,z2 = 3,3,3
+x3,y3,z3 = 3,3,6
+x4,y4,z4 = 3,3,9
+
+t01 = sp.Matrix([[sp.cos(theta1), -sp.sin(theta1), 0, 0],
+                [sp.sin(theta1), sp.cos(theta1), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+t12 = sp.Matrix([[sp.cos(theta2), -sp.sin(theta2), 0, 3],
+                [0, 0, -1, 0],
+                [sp.sin(theta2), sp.cos(theta2), 0, 0],
+                [0, 0, 0, 1]])
+
+t23 = sp.Matrix([[sp.cos(theta3), -sp.sin(theta3), 0, 3],
+                [sp.sin(theta3), sp.cos(theta3), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+t34 = sp.Matrix([[1, 0, 0, 3],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+# Now final projection matrix will involve multiplication of all the matrices giving t04
+# and then determining the position of four points and plotting them
+# Then adding a timer to change the position every 100 milliseconds to make an animation
+
+t02 = t01*t12
+t03 = t02*t23
+t04 = t03*t34
+
+p0 = sp.Matrix(4,1,[x0,y0,z0,1]) #axis 0 coordinates are constant hence outside the loop
+
+while( (theta_1<=60) or (theta_2<=45) or (theta_3>=-45)):
+
+    theta_1 = theta_1 + 0.006
+    theta_2 = theta_2 + 0.0045
+    theta_3 = theta_3 - 0.0045
+
+    # p1 = sp.Matrix(4,1,[x1,y1,z1,1])
+    # p2 = sp.Matrix(4,1,[x2,y2,z2,1])
+    # p3 = sp.Matrix(4,1,[x3,y3,z3,1])
+    # p4 = sp.Matrix(4,1,[x4,y4,z4,1])
+    p1 = t01*p0
+    p2 = t02*p0
+    p3 = t03*p0
+    p4 = t04*p0
+    
+    # p1_func = lambdify((theta1, theta2, theta3), p1, "numpy") #Lambdify method
+    # p2_func = lambdify((theta1, theta2, theta3), p2, "numpy")
+    # p3_func = lambdify((theta1, theta2, theta3), p3, "numpy")
+    # p4_func = lambdify((theta1, theta2, theta3), p4, "numpy")
+    # np.array(p1_func).astype(np.float64)
+    # np.array(p2_func).astype(np.float64)
+    # np.array(p3_func).astype(np.float64)
+    # np.array(p4_func).astype(np.float64)
+    
+    p1_func = p1.subs(theta1, theta_1).subs(theta2, theta_2).subs(theta3, theta_3).evalf() #evalf method
+    p2_func = p2.subs(theta1, theta_1).subs(theta2, theta_2).subs(theta3, theta_3).evalf()
+    p3_func = p3.subs(theta1, theta_1).subs(theta2, theta_2).subs(theta3, theta_3).evalf()
+    p4_func = p4.subs(theta1, theta_1).subs(theta2, theta_2).subs(theta3, theta_3).evalf()
+
+    x = np.array([x0,p1_func[0,0],p2_func[0,0],p3_func[0,0],p4_func[0,0]])
+    y = np.array([y0,p1_func[2,0],p2_func[2,0],p3_func[2,0],p4_func[2,0]])
+    z = np.array([z0,p1_func[3,0],p2_func[3,0],p3_func[3,0],p4_func[3,0]])
+
+    fig = plt.figure()
+    axis = plt.axes(projection='3d')
+    axis = Axes3D(fig)
+    #ax = fig.gca(projection='3d')
+
+    axis.set_xlim3d(-6, 6)
+    axis.set_ylim3d(-6, 6)
+    axis.set_zlim3d(-6, 6)
+    axis.set_xlabel('$X$')
+    axis.set_ylabel('$Y$')
+    axis.set_zlabel('$Z$')
+    axis.set_title("3D simulation")
+
+    print(x, y, z)
+
+    Axes3D.plot(x, y, zdir = 'z')
+    plt.show()
+    #plt.plot()
+
+sp.pprint(p1,p2,p3,p4)    
