@@ -1,0 +1,129 @@
+#Reverse kinematics
+
+# Manipulator robotics FK
+
+import numpy as np
+import matplotlib.pyplot as plt
+from mpl_toolkits import mplot3d
+from mpl_toolkits.mplot3d import Axes3D
+import sympy as sp
+import mpmath as m
+from sympy import lambdify
+from sympy import Symbol
+
+theta1 = Symbol('theta1')
+theta2 = Symbol('theta2')
+theta3 = Symbol('theta3')
+
+theta1_1 = Symbol('theta1_1') #new symbols for theta k+1
+theta2_1 = Symbol('theta2_1')
+theta3_1 = Symbol('theta3_1')
+
+theta_1 = 0 
+theta_2 = 0
+theta_3 = 0
+
+x0,y0,z0 = 0,0,0
+x1,y1,z1 = 0,0,0
+x2,y2,z2 = 0,0,3
+x3,y3,z3 = 0,0,6
+x4,y4,z4 = 0,0,9
+
+t01 = sp.Matrix([[sp.cos(theta1), -sp.sin(theta1), 0, 0],
+                [sp.sin(theta1), sp.cos(theta1), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+t12 = sp.Matrix([[sp.cos(theta2), -sp.sin(theta2), 0, 3],
+                [0, 0, -1, 0],
+                [sp.sin(theta2), sp.cos(theta2), 0, 0],
+                [0, 0, 0, 1]])
+
+t23 = sp.Matrix([[sp.cos(theta3), -sp.sin(theta3), 0, 3],
+                [sp.sin(theta3), sp.cos(theta3), 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+t34 = sp.Matrix([[1, 0, 0, 3],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]])
+
+# Now final projection matrix will involve multiplication of all the matrices giving t04
+# and then determining the position of four points and plotting them
+# Then adding a timer to change the position every 100 milliseconds to make an animation
+
+t02 = t01*t12
+t03 = t02*t23
+t04 = t03*t34
+
+p0 = sp.Matrix(4,1,[x0,y0,z0,1]) #axis 0 coordinates are constant hence outside the loop
+
+p1 = t01*p0
+p2 = t02*p0
+p3 = t03*p0
+p4 = t04*p0
+
+#sp.pprint(t04)
+
+j = sp.Matrix([[sp.diff(p4[0,0],theta1),sp.diff(p4[0,0],theta2),sp.diff(p4[0,0],theta3)],
+               [sp.diff(p4[1,0],theta1),sp.diff(p4[1,0],theta2),sp.diff(p4[1,0],theta3)],
+               [sp.diff(p4[2,0],theta1),sp.diff(p4[2,0],theta2),sp.diff(p4[2,0],theta3)],
+               [0,0,0,1]])
+
+j_inv = j.inv() #Inverse of Jacobian
+
+k = 1 # Parameter for a 3d line
+del_k = 0.001 # Can determine delx , dely and delz
+l = 2
+m = 3
+n = 4
+
+theta1_0 = np.pi()/4 #Initial guess
+theta2_0 = -np.pi()/4
+theta3_0 = 0
+
+theta = sp.matrix([theta1_0],[theta2_0],[theta3_0])  
+
+while(sp.det(j_inv).subs(theta1, theta1_0).subs(theta2, theta2_0).subs(theta3, theta3_0).evalf().evalf() != 0) :
+
+    temp1 = theta1_0
+    temp2 = theta2_0
+    temp3 = theta3_0
+
+    theta = j_inv * sp.matrix([del_k * l],[del_k * m],[del_k * n]) + sp.matrix([theta1_0], [theta2_0], [theta3_0])
+
+    theta1_0 = theta[0,0].subs(theta1, theta1_0).subs(theta2, theta1_0).subs(theta3, theta3_0).evalf()
+    theta2_0 = theta[1,0].subs(theta1, theta1_0).subs(theta2, theta1_0).subs(theta3, theta3_0).evalf()
+    theta3_0 = theta[2,0].subs(theta1, theta1_0).subs(theta2, theta1_0).subs(theta3, theta3_0).evalf()
+
+    p1_func = p1.subs(theta1, theta1_0).subs(theta2, theta2_0).subs(theta3, theta3_0).evalf()
+    p2_func = p2.subs(theta1, theta1_0).subs(theta2, theta2_0).subs(theta3, theta3_0).evalf()
+    p3_func = p3.subs(theta1, theta1_0).subs(theta2, theta2_0).subs(theta3, theta3_0).evalf()
+    p4_func = p4.subs(theta1, theta1_0).subs(theta2, theta2_0).subs(theta3, theta3_0).evalf()
+
+    x = np.array([x0,p1_func[0,0],p2_func[0,0],p3_func[0,0],p4_func[0,0]])
+    y = np.array([y0,p1_func[2,0],p2_func[2,0],p3_func[2,0],p4_func[2,0]])
+    z = np.array([z0,p1_func[3,0],p2_func[3,0],p3_func[3,0],p4_func[3,0]])
+
+    fig = plt.figure()
+    axis = plt.axes(projection='3d')
+    axis = Axes3D(fig)
+    #ax = fig.gca(projection='3d')
+
+    axis.set_xlim3d(-6, 6)
+    axis.set_ylim3d(-6, 6)
+    axis.set_zlim3d(-6, 6)
+    axis.set_xlabel('$X$')
+    axis.set_ylabel('$Y$')
+    axis.set_zlabel('$Z$')
+    axis.set_title("3D simulation")
+
+    print(x, y, z)
+
+    Axes3D.plot(x, y, zdir = 'z')
+    plt.show()
+
+
+
+
