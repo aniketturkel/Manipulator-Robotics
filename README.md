@@ -32,7 +32,7 @@ Involves taking in desired joint position values to move the the manipulator.
 
 ### Inverse Kinematics
 
-Involves obtaining desired joint position values from the destination position in task space.
+Involves obtaining desired joint position values for the destination position in task space.
 
 ### Dynamics
 
