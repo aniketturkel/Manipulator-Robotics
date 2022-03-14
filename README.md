@@ -2,7 +2,7 @@
 
 ## Manipulator Arm
 
-![image](https://raw.githubusercontent.com/IvLabs/manipulation/main/Results/Manipulator%20Robotics%20Results/Aniket%20Turkel/Pybullet/Pick%20and%20place.gif)
+![image](https://i.imgur.com/aeJoJf4.gifv)
 
 
 
