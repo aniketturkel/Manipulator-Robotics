@@ -2,7 +2,7 @@
 
 ## Manipulator Arm
 
-![image](https://i.imgur.com/aeJoJf4.gifv)
+![](https://i.imgur.com/aeJoJf4.gifv)
 
 
 
