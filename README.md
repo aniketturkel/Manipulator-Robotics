@@ -39,7 +39,15 @@ Involves obtaining desired joint position values for the destination position in
 Dynamics corresponds to using controlling Force and/or Torque values for all joints such that the final positions are approximately the destination positions.
 
 **Application of Dynamics:**
+**Pick and place: **
 
 ![image](https://i.imgur.com/aeJoJf4.gif)
 
+### Tools and softwares used to perform the project : 
+
+Coding was entirely done in python and the following libraries were used : 
+1. The Numpy library
+2. The Sympy library(for trajectory generation)
+3. The Time Library
+4. The Pybullet setup and library
 
