@@ -2,7 +2,7 @@
 
 ## Manipulator Arm
 
-![image](https://i.imgur.com/aeJoJf4.gifv)
+![image](https://i.imgur.com/aeJoJf4.gif)
 
 This is the start of Manipulator Robotics as a project.
 
