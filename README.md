@@ -16,7 +16,7 @@ Two types of joints:
 
 ## Degree of freedom:
 
-The total number of variabloes which define the state of a Manipulator arm is called the degree of freedom(dof).
+The total number of variables which define the state of a Manipulator arm is called the degree of freedom(dof) of the a given Manipulator arm.
 
 ## What about controlling a Manipulator then?
 
@@ -38,8 +38,8 @@ Involves obtaining desired joint position values for the destination position in
 
 Dynamics corresponds to using controlling Force and/or Torque values for all joints such that the final positions are approximately the destination positions.
 
-**Application of Dynamics:**
-**Pick and place: **
+**Application of Kinematics:**
+**Pick and place(via position control): **
 
 ![image](https://i.imgur.com/aeJoJf4.gif)
 
